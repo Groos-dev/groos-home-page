@@ -1,0 +1,41 @@
+name: Groos-Home-Page Deploy
+
+on:
+  push:
+    branches:
+      - main  # Trigger when push to main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout code
+      uses: actions/checkout@v3
+
+    # 2. Setup Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20 # Node.js version
+        cache: npm
+
+    # 3. Install dependencies and build
+    - name: Install and Build
+      run: |
+        npm install
+        npm run build
+
+    # 4. Deploy to Server
+    - name: Deploy to Server
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        HOST: ${{ secrets.SERVER_HOST }}
+        USERNAME: ${{ secrets.SERVER_USERNAME }}
+        TARGET_PATH: ${{ secrets.TARGET_PATH }}
+      run: |
+        # create target path if not exists
+        ssh -i ~/.ssh/id_rsa $USERNAME@$HOST "mkdir -p $TARGET_PATH"
+
+        # deploy to server
+        rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa" ./dist/ $USERNAME@$HOST:$TARGET_PATH
