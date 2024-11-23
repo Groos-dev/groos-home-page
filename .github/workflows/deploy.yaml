@@ -34,6 +34,13 @@ jobs:
         USERNAME: ${{ secrets.SERVER_USERNAME }}
         TARGET_PATH: ${{ secrets.TARGET_PATH }}
       run: |
+        # Install SSH key
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+        # Add host key to known_hosts to prevent first-time connection issues
+        ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
         # create target path if not exists
         ssh -i ~/.ssh/id_rsa $USERNAME@$HOST "mkdir -p $TARGET_PATH"
 
