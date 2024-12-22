@@ -1,6 +1,33 @@
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+@keyframes underline-extend {
+  0% {
+    width: 0;
+    left: 50%;
+  }
+  100% {
+    width: 100%;
+    left: 0;
+  }
+}
+
+.underline-animation {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.underline-animation::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px; 
+  background-color: #3490dc; 
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.underline-animation:hover::after {
+  width: 100%;
+  left: 0;
+  animation: underline-extend 0.3s ease forwards; 
 }
